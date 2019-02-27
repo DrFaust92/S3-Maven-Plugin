@@ -1,6 +1,5 @@
 package io.faust.s3;
 
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.ObjectMetadata;
@@ -56,7 +55,7 @@ public class S3Mojo extends AbstractMojo {
             if (region != null) {
                 s3Client = AmazonS3ClientBuilder.standard().withRegion(region).build();
             } else {
-                s3Client = AmazonS3ClientBuilder.standard().withRegion(Regions.DEFAULT_REGION).build();
+                s3Client = AmazonS3ClientBuilder.defaultClient();
             }
             String targetKey = new File(key, file).getPath();
             putEncryptedObject(fileToUpload, s3Client, targetKey);
