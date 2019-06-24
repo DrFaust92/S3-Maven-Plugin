@@ -1,16 +1,8 @@
 package io.faust.s3plugin;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicSessionCredentials;
-import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.securitytoken.AWSSecurityTokenService;
-import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder;
-import com.amazonaws.services.securitytoken.model.AssumeRoleRequest;
-import com.amazonaws.services.securitytoken.model.Credentials;
-import com.amazonaws.services.securitytoken.model.GetSessionTokenRequest;
-import com.amazonaws.services.securitytoken.model.GetSessionTokenResult;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -58,12 +50,13 @@ public class S3Mojo extends AbstractMojo {
             S3Utils s3Utils = new S3Utils();
             File fileToUpload = new File(path, file);
             AmazonS3ClientBuilder s3ClientawsClientBuilder;
+            STSUtils stsUtils = new STSUtils(region, role);
 
 
             AWSStaticCredentialsProvider creds;
 
             if (role != null) {
-                creds = new AWSStaticCredentialsProvider(assumeRole());
+                creds = new AWSStaticCredentialsProvider(stsUtils.assumeRole());
             } else {
                 creds = null;
             }
@@ -79,39 +72,6 @@ public class S3Mojo extends AbstractMojo {
             getLog().error("could not upload file", e);
             throw new MojoExecutionException("could not upload file", e);
         }
-    }
-
-
-    private BasicSessionCredentials assumeRole() {
-        // Creating the STS client is part of your trusted code. It has
-        // the security credentials you use to obtain temporary security credentials.
-        AWSSecurityTokenService stsClient = AWSSecurityTokenServiceClientBuilder.standard()
-                .withCredentials(new ProfileCredentialsProvider())
-                .withRegion(region)
-                .build();
-
-        // Assume the IAM role. Note that you cannot assume the role of an AWS root account;
-        // Amazon S3 will deny access. You must use credentials for an IAM user or an IAM role.
-        AssumeRoleRequest roleRequest = new AssumeRoleRequest()
-                .withRoleArn(role)
-                .withRoleSessionName(roleSessionName);
-        stsClient.assumeRole(roleRequest);
-
-        // Start a session.
-        GetSessionTokenRequest getSessionTokenRequest = new GetSessionTokenRequest();
-        // The duration can be set to more than 3600 seconds only if temporary
-        // credentials are requested by an IAM user rather than an account owner.
-        getSessionTokenRequest.setDurationSeconds(7200);
-        GetSessionTokenResult sessionTokenResult = stsClient.getSessionToken(getSessionTokenRequest);
-        Credentials sessionCredentials = sessionTokenResult.getCredentials();
-
-        // Package the temporary security credentials as a BasicSessionCredentials object
-        // for an Amazon S3 client object to use.
-        BasicSessionCredentials basicSessionCredentials = new BasicSessionCredentials(
-                sessionCredentials.getAccessKeyId(), sessionCredentials.getSecretAccessKey(),
-                sessionCredentials.getSessionToken());
-
-        return basicSessionCredentials;
     }
 
 }
