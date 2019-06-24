@@ -1,0 +1,1 @@
+[![Build Status](https://travis-ci.com/DrFaust92/S3-Maven-Plugin.svg?branch=master)](https://travis-ci.com/DrFaust92/S3-Maven-Plugin)
