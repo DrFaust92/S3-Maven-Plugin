@@ -4,7 +4,7 @@ jdk:
 #  - openjdk11
 
 install:
-  - bundle install --path vendor/bundle
+  - npm install -g snyk
   - snyk test
 
 env:
