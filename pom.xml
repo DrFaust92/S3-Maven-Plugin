@@ -14,17 +14,13 @@
     </properties>
 
 
-<!--    <distributionManagement>-->
-<!--        <snapshotRepository>-->
-<!--            <id>ossrh</id>-->
-<!--            <url>https://oss.sonatype.org/content/repositories/snapshots</url>-->
-<!--        </snapshotRepository>-->
-<!--        <repository>-->
-<!--            <id>ossrh</id>-->
-<!--            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/-->
-<!--            </url>-->
-<!--        </repository>-->
-<!--    </distributionManagement>-->
+    <distributionManagement>
+       <repository>
+         <id>github</id>
+         <name>GitHub DrFaust92 Apache Maven Packages</name>
+         <url>https://maven.pkg.github.com/DrFaust92/S3-Maven-Plugin</url>
+       </repository>
+    </distributionManagement>
 
     <licenses>
         <license>
